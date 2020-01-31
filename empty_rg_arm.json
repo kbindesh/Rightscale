@@ -15,7 +15,7 @@
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2018-05-01",
             "name": "TEST-RG-ARM-RS",
-            "location": "centralus",
+            "location": "eastus2",
             "properties": {}
         }
     ],
