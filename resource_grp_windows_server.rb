@@ -1,21 +1,3 @@
-#Copyright 2015 RightScale
-#
-#Licensed under the Apache License, Version 2.0 (the "License");
-#you may not use this file except in compliance with the License.
-#You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-#Unless required by applicable law or agreed to in writing, software
-#distributed under the License is distributed on an "AS IS" BASIS,
-#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#See the License for the specific language governing permissions and
-#limitations under the License.
-
-
-#RightScale Cloud Application Template (CAT)
-
-# DESCRIPTION
 # Deploys a Windows Server of the type chosen by the user.
 # It automatically imports the ServerTemplate it needs.
 
@@ -151,33 +133,6 @@ end
 mapping "map_mci" do
   like $windows_server_declarations.map_mci
 end
-
-##################
-# CONDITIONS     #
-##################
-
-# Used to decide whether or not to pass an SSH key or security group when creating the servers.
-=begin
-condition "needsSshKey" do
-  like $conditions.needsSshKey
-end
-
-condition "needsSecurityGroup" do
-  like $conditions.needsSecurityGroup
-end
-
-condition "needsPlacementGroup" do
-  like $conditions.needsPlacementGroup
-end
-
-condition "invSphere" do
-  like $conditions.invSphere
-end
-
-condition "inAzure" do
-  like $conditions.inAzure
-end
-=end
 
 ############################
 # RESOURCE DEFINITIONS     #
