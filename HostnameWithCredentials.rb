@@ -114,7 +114,7 @@ define set_hostname(@windows_server,$inc_value) return $updated_hostname do
     $updated_hostname=to_s($updated_hostname)
 
     $hostname_script_inp ={
-     "SERVER_HOSTNAME":"text:$updated_hostname"
+     "SERVER_HOSTNAME": "text:"+ $updated_hostname
     }
     call sys_log.detail("##Script inputs :" + to_s($set_hostname_script))
     call sys_log.detail("##Updated Hostname :" + to_s($updated_hostname))
