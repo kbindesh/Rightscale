@@ -1,0 +1,68 @@
+name 'WinServerVMNameUpdate'
+rs_ca_ver 20161221
+short_description "Hostname test catelog"
+long_description "Hostname test catelog"
+
+
+import "sys_log"
+
+parameter "param_username" do
+  category "User Inputs"
+  label "Windows Username"
+  type "string"
+  no_echo "false"
+end
+
+parameter "param_password" do
+  category "User Inputs"
+  label "Windows Password"
+  description "Minimum at least 8 characters and must contain at least one of each of the following:
+  Uppercase characters, Lowercase characters, Digits 0-9, Non alphanumeric characters [@#\$%^&+=]."
+  type "string"
+  min_length 8
+  max_length 32
+  allowed_pattern '(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])'
+  no_echo "true"
+end
+
+
+resource "windows_server", type: "server" do
+  name join(['HOSTNAMEDEMO-', last(split(@@deployment.href,"/"))])
+  cloud "AzureRM West Europe"
+  network "ABInBev_PoC-vnet"
+  subnets "default"
+  server_template_href "/api/server_templates/427790004"
+  multi_cloud_image_href "/api/multi_cloud_images/431178004"
+  instance_type "Standard_B1ms"
+  security_group_hrefs "/api/clouds/3524/security_groups/BQJCVS3P8BI5I"
+  associate_public_ip_address true
+end
+
+####################
+# OPERATIONS       #
+####################
+
+operation "enable" do
+    description "Get information once the app has been launched"
+    definition "enable"
+end
+
+# Description
+define enable(@windows_server,$param_username, $param_password) do
+    call sys_log.detail("##Enablement starts here..")
+    @serverlist = rs_cm.servers.get(filter: [join(["name==",@windows_server.name])])
+    # May return partially matched named creds, so find the exact one we want
+    foreach @srvr in @serverlist do
+        @serverlist = @srvr
+    end
+    @serverlist.update(server: { name: "UpdatedVMName", description: "Updated by update method "+to_s(now()) })
+end
+
+define update_VM_name(@windows_server,) do 
+    call sys_log.detail("##Enablement starts here..")
+    @serverlist = rs_cm.servers.get(filter: [join(["name==",@windows_server.name])])
+    foreach @srvr in @serverlist do
+        @serverlist = @srvr
+    end
+    @serverlist.update(server: { name: "UpdatedVMName", description: "VM name updated "+to_s(now()) })
+end 
