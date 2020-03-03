@@ -1,0 +1,86 @@
+name 'ServerNamewithCopies'
+rs_ca_ver 20161221
+short_description "Server name with Copies"
+long_description "Server name with Copies"
+
+import "sys_log"
+
+parameter "server_count" do
+    type "number"
+    label "Server count"
+end
+
+mapping "map_mci" do {
+    "Windows 2008R2" => {
+      "mci" => "Windows_Server_Datacenter_2008R2_x64",
+    }
+  } end
+
+output_set "output_server_ips_private" do
+    label "Private IP"
+    category "Access Information"
+    description "Private IP address of the server(s)."
+    default_value @windows_server.private_ip_address
+end
+
+resource "windows_server", type: "server", copies: $server_count do
+  name join(['HOSTNAMEDEMO-', copy_index()])
+  cloud "AzureRM West Europe"
+  network "ABInBev_PoC-vnet"
+  subnets "default"
+  server_template_href "/api/server_templates/427790004"
+  multi_cloud_image_href "/api/multi_cloud_images/431178004"
+  instance_type "Standard_B1ms"
+  security_group_hrefs "/api/clouds/3524/security_groups/BQJCVS3P8BI5I"
+  associate_public_ip_address true
+end
+
+####################
+# OPERATIONS       #
+####################
+
+operation "launch" do
+  description "Launch the Server"
+  definition "launch_handler"
+end
+
+operation "enable" do
+  description "Launch the Server"
+  definition "enable"
+end
+
+define enable(@windows_server,$server_count) do
+  call sys_log.detail("##Enablement starts..")
+  $json = to_object(@windows_server)
+  call sys_log.detail("##Enable json" +to_s($json))
+  call update_servername(@windows_server)
+end
+
+define launch_handler(@windows_server,$server_count) do
+    $json = to_object(@windows_server)
+    call sys_log.detail("##" +to_s($json))
+
+    if $server_count > 0
+        provision(@windows_server)
+    end
+end
+
+define update_servername(@windows_server) do
+  $cred_name="HOSTNAMEDEMO"
+  @cred = rs_cm.servers.index(filter: [join(["name==",$cred_name])])
+  call sys_log.detail("##Cred" +to_s(@cred))
+  # May return partially matched named creds, so find the exact one we want
+  $updated_count = 0
+  foreach @credential in @cred do
+      $updated_count=$updated_count+1
+      $updated_hostname = join(['SERVER00', $updated_count])
+      call sys_log.detail("##Updated Hostname : " +to_s($updated_hostname))
+      call sys_log.detail("##ServerName : " +to_s(@credential.name))
+      $json = to_object(@credential)
+      call sys_log.detail("##Json : " +to_s($json))
+      #@cred = @credential
+      @credential.update(server: {name: $updated_hostname})
+      call sys_log.detail("##Updated ServerName of :" +to_s(@credential.name))
+  end
+  #@cred.update(credential: { value: $new_cred_value, description: "Updated by ABInBev on "+to_s(now()) })
+end
