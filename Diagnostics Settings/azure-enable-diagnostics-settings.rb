@@ -82,7 +82,7 @@ resource "vm_extension_enable_diagsettings", type: "rs_azure_compute_test.extens
       "autoUpgradeMinorVersion" => true, 
       "protectedSettings": {
           "storageAccountName": "mgmtnaznonprodbootdiag",
-          "storageAccountSasToken": "?sv=2019-10-10&ss=bfqt&srt=sco&sp=rwlacup&se=2020-08-30T21:09:06Z&st=2020-07-14T13:09:06Z&spr=https&sig=7hl2sI5EuYDmtypOIvDnMURUAsF%2FKrkbGp9vtyqNwt8%3D"
+          "storageAccountSasToken": "IvDnMURUAsF%2FKrkbGp9vtyqNwt8%3D"
       },
       "settings": {
         "StorageAccount": "mgmtnaznonprodbootdiag",
